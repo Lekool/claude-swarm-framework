@@ -1,0 +1,26 @@
+{
+  "_comment": "Cache your project board IDs here so the orchestrator doesn't re-query the API every session. Run the discovery commands in customization-guide.md Step 4 to fill these in.",
+  "platform": "github",
+  "project_id": "YOUR_PROJECT_ID",
+  "project_number": 1,
+  "owner": "YOUR_ORG_OR_USER",
+  "status_field_id": "YOUR_STATUS_FIELD_ID",
+  "status_options": {
+    "Todo": "OPTION_ID",
+    "More Research Needed": "OPTION_ID",
+    "In Progress": "OPTION_ID",
+    "Ready to Assign": "OPTION_ID",
+    "In Review": "OPTION_ID",
+    "Ready to Merge": "OPTION_ID",
+    "Blocked": "OPTION_ID",
+    "Done": "OPTION_ID"
+  },
+  "priority_field_id": "YOUR_PRIORITY_FIELD_ID",
+  "priority_options": {
+    "P0-critical": "OPTION_ID",
+    "P1-high": "OPTION_ID",
+    "P2-medium": "OPTION_ID",
+    "P3-low": "OPTION_ID"
+  },
+  "items": {}
+}
