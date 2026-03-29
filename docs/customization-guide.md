@@ -223,17 +223,30 @@ The template includes minimal git and CLI permissions. Add your project-specific
 
 **Note:** JSON does not support comments. The `//` lines above are for illustration — remove them and uncomment only the permissions you need.
 
-## Step 6: Point Agents at Your Docs
+## Step 6: Create Your `CLAUDE.md`
 
-If your project has architecture documentation, a coding guidelines file, or an incident log, update the references in each agent file.
+Claude Code reads `CLAUDE.md` from the repo root at the start of every session. This is the **primary** way all agents — orchestrator, researcher, worker, and reviewer — get project context. The `<!-- CUSTOMIZE -->` sections in agent files define agent behavior; `CLAUDE.md` defines project knowledge.
 
-Common patterns:
+**Your `CLAUDE.md` should include:**
+
+- **Project name and purpose** — what the repo is and does
+- **Repo layout** — key directories and what they contain
+- **Languages and frameworks** — what the project uses
+- **How to build, test, and lint** — the exact commands (e.g., `npm test`, `pytest`, `cargo test`)
+- **Coding conventions** — naming, patterns, anything agents should follow
+- **Default branch** — `main` or `master`
+- **Architecture overview** — or a pointer to your architecture docs
+- **Anything agents should avoid** — files not to touch, patterns not to use, known gotchas
+
+You don't need a template for this — just describe your project clearly. If you're using Claude Code to set up the swarm, ask it to generate the `CLAUDE.md` for you based on your repo.
+
+**Optional additional docs to reference:**
+
+If your project has other documentation, point to it from `CLAUDE.md` or from the `## Project Context` section in each agent file:
+
 - **Architecture doc:** `ARCHITECTURE.md`, `docs/architecture.md`, or a wiki link
-- **Coding guidelines:** `CLAUDE.md` (Claude Code reads this automatically)
 - **Knowledge base:** A `findings.md` or `INCIDENTS.md` with root-cause analyses from past bugs
 - **API docs:** OpenAPI specs, Postman collections
-
-If you don't have these docs yet, you can remove the references. The agents will still work — they just won't have the extra context.
 
 ## Step 7: Optional Features
 

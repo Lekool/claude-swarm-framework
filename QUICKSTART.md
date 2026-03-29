@@ -26,7 +26,22 @@ cp -r template/tasks /path/to/your-repo/
 chmod +x /path/to/your-repo/scripts/check-agents.sh
 ```
 
-### 2. Fill in Project Context
+### 2. Create a `CLAUDE.md` in your repo root
+
+Claude Code reads `CLAUDE.md` automatically at the start of every session. This is the single source of truth that all agents — orchestrator, researcher, worker, and reviewer — use to understand your project. Without it, agents will waste time rediscovering context or make wrong assumptions.
+
+Your `CLAUDE.md` should include:
+- **Project name and purpose** — what the repo is and does
+- **Repo layout** — key directories and what they contain
+- **Languages and frameworks** — what the project uses
+- **How to build, test, and lint** — the exact commands (e.g., `npm test`, `pytest`, `cargo test`)
+- **Coding conventions** — naming, patterns, anything agents should follow
+- **Default branch** — `main` or `master`
+- **Anything agents should avoid** — files not to touch, patterns not to use, known gotchas
+
+You don't need a template — just describe your project clearly. If you're using Claude Code to set up the swarm, ask it to generate the `CLAUDE.md` for you based on your repo.
+
+### 3. Fill in Project Context
 
 Open each agent file and update the `<!-- CUSTOMIZE -->` sections:
 
@@ -45,11 +60,11 @@ At minimum, set in each file:
 - **Test command** — how to run tests (e.g., `npm test`, `pytest`)
 - **Default branch** — `main` or `master`
 
-### 3. Choose your tracker
+### 4. Choose your tracker
 
 In each agent file, uncomment the command block for your issue tracker (GitHub, GitLab, Linear, Jira, or local files) and delete the others.
 
-### 4. Create status labels
+### 5. Create status labels
 
 ```bash
 # GitHub example (adapt for your platform):
@@ -59,7 +74,7 @@ gh label create "ready-to-merge" --color "0E8A16" --description "Reviewer recomm
 gh label create "human-only" --color "D93F0B" --description "Needs human input"
 ```
 
-### 5. Add project-specific permissions
+### 6. Add project-specific permissions
 
 Edit `.claude/settings.local.json` and add your test runner, linter, and any other tools agents need:
 
@@ -85,7 +100,7 @@ Edit `.claude/settings.local.json` and add your test runner, linter, and any oth
 }
 ```
 
-### 6. Launch the swarm
+### 7. Launch the swarm
 
 ```bash
 cd /path/to/your-repo
