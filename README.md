@@ -131,9 +131,13 @@ The orchestrator maintains three files in `tasks/`:
 ## Requirements
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) (authenticated)
-- [tmux](https://github.com/tmux/tmux)
+- [tmux](https://github.com/tmux/tmux) (1.8+)
 - Git 2.15+ (worktree support)
 - A tracker CLI: [gh](https://cli.github.com/), [glab](https://gitlab.com/gitlab-org/cli), [linear CLI](https://github.com/linear/linear-cli), [jira-cli](https://github.com/ankitpokhrel/jira-cli), or none (local files)
+
+## Platform Notes
+
+**Windows:** tmux is not available natively on Windows. Use [WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install) (Windows Subsystem for Linux) to run the swarm. All commands in this framework assume a Unix shell.
 
 ## License
 

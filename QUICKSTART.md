@@ -5,7 +5,8 @@ Get the swarm running in 5 minutes.
 ## Prerequisites
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed and authenticated
-- [tmux](https://github.com/tmux/tmux) installed
+- [tmux](https://github.com/tmux/tmux) installed (1.8+ required — `check-agents.sh` uses `capture-pane -p -S` which requires 1.8)
+- **Windows users:** tmux is not available natively on Windows. Use [WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install) to run the swarm
 - Git
 - An issue tracker CLI for your platform:
   - GitHub: [gh](https://cli.github.com/)
@@ -102,9 +103,10 @@ Edit `.claude/settings.local.json` and add your test runner, linter, and any oth
 
 ### 7. Launch the swarm
 
+**Important:** You must run this from the root of your target repo (where `.claude/` lives).
+
 ```bash
-cd /path/to/your-repo
-claude --agent orchestrator
+cd /path/to/your-repo && claude --agent orchestrator
 ```
 
 Tell it: **"Work on open issues"**
@@ -118,6 +120,55 @@ The orchestrator will:
 6. Label issues `ready-to-merge` when done
 
 You check your issue tracker, review the PRs, and merge when satisfied.
+
+> **About `--dangerously-skip-permissions`:** When the orchestrator dispatches worker and researcher agents, it uses `--dangerously-skip-permissions` so those agents can run without interactive permission prompts. This is safe when combined with the `settings.local.json` allowlist (Step 6), which limits exactly which commands agents can run. Without this flag, each agent would pause and ask for permission on every bash command, making autonomous operation impossible.
+
+## What You'll See (First 30 Seconds)
+
+After launching, the orchestrator will begin talking through its plan. Here's roughly what the first 30 seconds look like:
+
+```
+$ cd ~/projects/my-repo && claude --agent orchestrator
+
+╭──────────────────────────────────────────╮
+│ ✻ Welcome to Claude Code                 │
+│   /help for help                         │
+╰──────────────────────────────────────────╯
+
+> Work on open issues
+
+● Reading CLAUDE.md for project context...
+● Fetching open issues from tracker...
+● Found 5 open issues. Triaging by priority...
+● Setting up tmux session "swarm"...
+● Dispatching researcher-01 to investigate issue #12 (P0)...
+● Dispatching researcher-02 to investigate issue #15 (P1)...
+```
+
+You'll see the orchestrator create tmux windows for each agent. You can watch all agents in real time with `tmux attach -t swarm` and switch between windows with `Ctrl-b n` (next) and `Ctrl-b p` (previous).
+
+## Stopping the Swarm
+
+To stop the swarm gracefully:
+
+1. **Tell the orchestrator to stop:** Type in its window (or at the prompt):
+   ```
+   Write HANDOFF.md and stop. Wrap up any in-flight tasks.
+   ```
+   The orchestrator will write a `tasks/HANDOFF.md` summarizing in-flight work, then exit.
+
+2. **Kill the tmux session** to clean up remaining windows:
+   ```bash
+   tmux kill-session -t swarm
+   ```
+
+3. **Clean up worktrees** (optional — do this after merging any open PRs):
+   ```bash
+   git worktree list          # see active worktrees
+   git worktree remove wt-01  # remove a finished worktree
+   ```
+
+Next time you launch the swarm, the orchestrator will read `HANDOFF.md` to resume where it left off.
 
 ## What to Expect
 
