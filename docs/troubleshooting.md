@@ -249,6 +249,35 @@ Compare with state.json and update accordingly.
 
 After reading and reconciling, the orchestrator deletes HANDOFF.md.
 
+## Communication Issues
+
+### Orchestrator goes silent after dispatching agents
+
+**Problem:** The orchestrator dispatches workers/researchers and says "I'll check back" or goes quiet. The human waits for an update that never comes.
+
+**Cause:** The orchestrator cannot proactively message the human. It only acts when the human sends it a message or a background task's output appears in its pane. If the orchestrator promised "I'll report back," that's a false promise — it has no mechanism to initiate contact.
+
+**Fix:** The orchestrator should use notification-bearing background checks. Instead of:
+```bash
+# BAD — silent check, human never knows to come back
+sleep 180 && tmux capture-pane -t swarm:worker-01 -p | tail -15
+```
+
+Use:
+```bash
+# GOOD — fires a desktop notification when something changes
+sleep 180 && STATUS=$(tmux capture-pane -t swarm:worker-01 -p | tail -15) && \
+  if echo "$STATUS" | grep -q "created pull request\|PR #\|pushed\|Cost:"; then \
+    osascript -e 'display notification "Worker finished — PR may be ready" with title "Swarm"'; \
+  elif echo "$STATUS" | grep -q "error\|Error\|FAIL\|failed"; then \
+    osascript -e 'display notification "Worker hit an error — check status" with title "Swarm"'; \
+  fi && echo "$STATUS"
+```
+
+The desktop notification is the only way to get the human's attention without them actively checking the terminal. On Linux, replace `osascript` with `notify-send "Swarm" "message"`.
+
+**Prevention:** The orchestrator template includes a Communication Constraint section that forbids "I'll report back" language and requires all background checks to include notifications. If your orchestrator is still making false promises, make sure you're using the latest template version.
+
 ## Escalation
 
 ### When to stop and ask the human
