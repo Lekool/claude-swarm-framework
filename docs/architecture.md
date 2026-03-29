@@ -202,7 +202,7 @@ Claude Code offers three multi-agent approaches. This framework uses the **swarm
 Each agent is a separate `claude` process running in its own tmux window. The orchestrator dispatches them by piping prompts into tmux panes. Agents don't talk to each other — they communicate through the issue tracker (comments, labels). Workers run in isolated git worktrees.
 
 **Agent Teams (experimental, built into Claude Code):**
-A "team lead" Claude session spawns "teammates" — separate Claude instances that share a task list and can message each other directly. Teammates are peers that collaborate in real-time. All run on the same machine, coordinated through local files (`~/.claude/teams/`, `~/.claude/tasks/`).
+A "team lead" Claude session spawns "teammates" — separate Claude instances that share a task list and can message each other directly. Teammates are peers that collaborate in real-time. All run on the same machine, coordinated through local state managed by Claude Code.
 
 **Sub-Agents (built into Claude Code):**
 A single Claude session spawns child agents using the `Agent` tool. Sub-agents run inside the parent's session, share its permissions, and return results back to the parent's context. They can use `isolation: "worktree"` for automatic git worktree creation.
@@ -264,7 +264,7 @@ Agent teams are experimental. To enable:
 }
 ```
 
-**Step 2:** Choose a display mode (optional). In `~/.claude.json`:
+**Step 2:** Choose a display mode (optional). In `~/.claude/settings.json`:
 
 ```json
 {

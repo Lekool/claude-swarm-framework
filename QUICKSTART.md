@@ -31,11 +31,12 @@ chmod +x /path/to/your-repo/scripts/check-agents.sh
 Open each agent file and update the `<!-- CUSTOMIZE -->` sections:
 
 ```bash
-# Edit all four:
+# Edit all five:
 $EDITOR .claude/agents/orchestrator.md
 $EDITOR .claude/agents/researcher.md
 $EDITOR .claude/agents/worker.md
 $EDITOR .claude/agents/reviewer.md
+$EDITOR .claude/agents/ux-reviewer.md
 ```
 
 At minimum, set in each file:

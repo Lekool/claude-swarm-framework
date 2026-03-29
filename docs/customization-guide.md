@@ -18,11 +18,12 @@ Every agent definition has a `## Project Context` section with `<!-- CUSTOMIZE -
 - **Worktree parent:** ~/projects/ (worktrees live as siblings to your repo)
 ```
 
-Update this section in all four agent files:
+Update this section in all five agent files:
 - `.claude/agents/orchestrator.md`
 - `.claude/agents/researcher.md`
 - `.claude/agents/worker.md`
 - `.claude/agents/reviewer.md`
+- `.claude/agents/ux-reviewer.md`
 
 ## Step 2: Choose Your Issue Tracker
 
