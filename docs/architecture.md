@@ -167,19 +167,27 @@ Session resumption brief. Written by the orchestrator before stopping. Read on n
 - Work outside their assigned scope (workers)
 - Modify files (researchers and reviewers)
 
-### The `--dangerously-skip-permissions` Flag
+### Permission Flags
 
-When the orchestrator dispatches agents into tmux windows, it launches them with `--dangerously-skip-permissions`. This flag tells Claude Code to skip interactive permission prompts, allowing agents to run autonomously without a human approving each command.
+When the orchestrator dispatches agents into tmux windows, it launches them with two flags:
 
-**Why it's needed:** Without this flag, every agent would pause and ask "Allow Bash(git status)?" on each command. Since the swarm is designed for unattended operation, this would block the entire pipeline.
+- **`--dangerously-skip-permissions`** — bypasses interactive prompts for Bash commands
+- **`--permission-mode bypassPermissions`** — bypasses interactive prompts for file operations (`Edit`, `Write`)
+
+Both are needed. `--dangerously-skip-permissions` alone only covers Bash commands — without `--permission-mode bypassPermissions`, agents will get stuck on "Do you want to create this file?" prompts for every file they edit.
+
+**Why it's needed:** Without these flags, every agent would pause and ask for permission on each command and file operation. Since the swarm is designed for unattended operation, this would block the entire pipeline.
 
 **Why it's safe in the swarm context:**
-- The `settings.local.json` allowlist (see [QUICKSTART.md](../QUICKSTART.md) Step 6) restricts exactly which commands agents can run — the flag skips prompts but does NOT bypass the allowlist
+- The `settings.local.json` allowlist (see [QUICKSTART.md](../QUICKSTART.md) Step 6) restricts exactly which commands agents can run
+- The allowlist includes `Edit` and `Write` for file operations
 - Workers operate in isolated worktrees, not the main repo
 - Researchers and reviewers are read-only by design
 - No agent can merge to the default branch or deploy
 
-**When to be cautious:** If you add broad permissions (e.g., `Bash(*)`), the flag will allow any command without prompting. Keep your allowlist specific.
+**Worktree setup:** The orchestrator copies `.claude/` into each worktree before dispatching, so workers have access to `settings.local.json` and agent definitions. Without this, worktrees would have no permission settings.
+
+**When to be cautious:** If you add broad permissions (e.g., `Bash(*)`), the flags will allow any command without prompting. Keep your allowlist specific.
 
 ### What only the HUMAN can do
 - Merge PRs/MRs

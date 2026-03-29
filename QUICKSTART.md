@@ -122,7 +122,7 @@ The orchestrator will:
 
 You check your issue tracker, review the PRs, and merge when satisfied.
 
-> **About `--dangerously-skip-permissions`:** When the orchestrator dispatches worker and researcher agents, it uses `--dangerously-skip-permissions` so those agents can run without interactive permission prompts. This is safe when combined with the `settings.local.json` allowlist (Step 6), which limits exactly which commands agents can run. Without this flag, each agent would pause and ask for permission on every bash command, making autonomous operation impossible.
+> **About permission flags:** When the orchestrator dispatches agents, it uses `--dangerously-skip-permissions --permission-mode bypassPermissions`. The first flag bypasses Bash command prompts; the second bypasses file Edit/Write prompts. Both are needed for autonomous operation. This is safe when combined with the `settings.local.json` allowlist (Step 6), which includes `Edit`, `Write`, and specific `Bash(...)` permissions to control exactly what agents can do.
 
 ## What You'll See (First 30 Seconds)
 

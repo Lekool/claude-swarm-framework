@@ -94,6 +94,26 @@ Add/remove labels
 
 After 3 failed attempts on any task, the orchestrator stops and escalates to the human with a summary of what was tried and why it failed.
 
+## Security Considerations
+
+This framework grants Claude Code agents permission to **create, edit, and delete files** autonomously, and to run shell commands without interactive approval. This is by design — agents cannot implement code, run tests, or open PRs without these capabilities.
+
+**Built-in safeguards:**
+
+- **`settings.local.json` is the allowlist.** It controls exactly which tools (`Edit`, `Write`) and which shell commands (`Bash(git:*)`, `Bash(gh:*)`, etc.) agents are permitted to use. Anything not in the allowlist is blocked, even with permission flags enabled.
+- **Workers operate in isolated worktrees**, not your main repo checkout. Changes are proposed via PR — they never land on the default branch without your review.
+- **Researchers and reviewers are read-only by design.** They cannot create files, edit code, or push branches.
+- **No agent can merge or deploy.** Merge authority and deployment are exclusively human actions. If an agent encounters a deploy step, it is instructed to refuse.
+- **All work is visible in your issue tracker.** Every research finding, PR, and review recommendation is posted as a comment — you have full audit trail.
+
+**Recommendations:**
+
+- **Always review PRs before merging.** Agents propose, humans approve. Never auto-merge agent PRs.
+- **Don't run the swarm directly on production repos.** The framework already uses worktrees for isolation — keep it that way.
+- **Keep the allowlist specific.** Avoid `Bash(*)` — list only the commands your agents actually need.
+- **Use sandboxed environments when possible.** CI runners, containers, or VMs add an extra layer of isolation.
+- **Audit `settings.local.json` before sharing your repo.** It may contain paths or permissions specific to your setup.
+
 ## Swarm vs. Agent Teams vs. Sub-Agents
 
 Claude Code offers three multi-agent approaches. This framework uses the **swarm** (isolated agents in tmux). See [docs/architecture.md](docs/architecture.md) for the full comparison, including how to enable agent teams and the hybrid research pattern.
