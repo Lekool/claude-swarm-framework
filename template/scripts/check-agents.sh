@@ -48,7 +48,7 @@ desktop_notify() {
 # Discover all agent windows in the swarm session
 list_agent_windows() {
     tmux list-windows -t swarm -F '#W' 2>/dev/null \
-        | grep -E '^(worker|researcher|reviewer)-' \
+        | grep -E '^(worker|researcher|ux-reviewer|reviewer)-' \
         || true
 }
 

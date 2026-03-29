@@ -23,12 +23,12 @@ The swarm is a set of specialized Claude Code agents that collaborate through an
                        │    │    │        │
               dispatch │    │    │        │ monitor
                        │    │    │        │ (check-agents.sh)
-                 ┌─────▼┐ ┌▼────▼─┐  ┌───┴──────┐
-                 │Resear-│ │Worker │  │Reviewer  │
-                 │cher   │ │(code) │  │(read-    │
-                 │(read- │ │       │  │ only)    │
-                 │ only) │ │       │  │          │
-                 └───────┘ └───┬───┘  └──────────┘
+                 ┌─────▼┐ ┌▼────▼─┐  ┌───┴──────┐  ┌──────────┐
+                 │Resear-│ │Worker │  │Reviewer  │  │UX        │
+                 │cher   │ │(code) │  │(read-    │  │Reviewer  │
+                 │(read- │ │       │  │ only)    │  │(read-    │
+                 │ only) │ │       │  │          │  │ only)    │
+                 └───────┘ └───┬───┘  └──────────┘  └──────────┘
                                │
                           opens PR/MR
                                │
@@ -38,7 +38,7 @@ The swarm is a set of specialized Claude Code agents that collaborate through an
                     └─────────────────────────────┘
 ```
 
-## The Four Roles
+## The Five Roles
 
 | Role | Reads | Writes | Isolation | Purpose |
 |------|-------|--------|-----------|---------|
