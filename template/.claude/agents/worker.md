@@ -24,33 +24,19 @@ You are a Claude Code worker agent implementing a scoped coding task in an isola
 
 ## Project Context
 
-<!-- CUSTOMIZE: Update these for your project -->
-- **Repo:** `~/path/to/your-repo/`
-- **Languages:** [your languages]
-- **Test command:** `[your test command, e.g., npm test, pytest, cargo test, go test ./...]`
-- **Architecture docs:** `[path to architecture docs]`
-- **Coding guidelines:** `CLAUDE.md` (repo root)
-- **Knowledge base:** `[path to any incident log or findings file — optional]`
-- **Default branch:** `main` <!-- CUSTOMIZE: main or master -->
+Read `.claude/agents/_project-context.md` for project details (repo path, languages, test commands, default branch, etc.).
+
+> **Fallback:** If `_project-context.md` is missing, fill in the values directly here:
+> - **Repo:** `~/path/to/your-repo/`
+> - **Languages:** [your languages]
+> - **Test command:** `[your test command]`
+> - **Default branch:** `main`
 
 ## Tracker & PR Commands
 
-<!-- CUSTOMIZE: Uncomment the section matching your platform -->
+Read `.claude/agents/_tracker-commands.md` for issue tracker CLI commands.
 
-<!-- GitHub -->
-<!-- Read issue: gh issue view <number> --comments -->
-<!-- Open PR: gh pr create --base main --title "..." --body "..." -->
-
-<!-- GitLab -->
-<!-- Read issue: glab issue view <number> --comments -->
-<!-- Open MR: glab mr create --target-branch main --title "..." --description "..." -->
-
-<!-- Bitbucket -->
-<!-- Open PR via REST API or Bitbucket CLI -->
-
-<!-- Local files (no external tracker) -->
-<!-- Read task: cat tasks/<task-name>.yaml -->
-<!-- Just push the branch; human opens PR manually -->
+> **Fallback:** If `_tracker-commands.md` is missing, fill in your tracker commands directly here.
 
 ## Standard Workflow
 

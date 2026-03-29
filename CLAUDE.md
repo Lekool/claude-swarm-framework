@@ -18,6 +18,8 @@ A documentation and template framework for running coordinated Claude Code agent
 template/              # Files users copy into their repos
   .claude/
     agents/            # Agent role definitions (orchestrator, researcher, worker, reviewer, ux-reviewer)
+      _project-context.md  # Shared project context (edited once, read by all agents)
+      _tracker-commands.md # Shared tracker CLI commands (edited once, read by all agents)
     settings.local.json # Permission allowlist template
   scripts/
     check-agents.sh    # Tmux monitor script

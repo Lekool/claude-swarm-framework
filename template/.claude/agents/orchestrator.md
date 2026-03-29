@@ -84,60 +84,19 @@ Blocked -> Todo -> More Research Needed -> Ready to Assign -> In Progress -> Don
 
 ## Project Context
 
-<!-- CUSTOMIZE: Update ALL of these for your project -->
-- **Repo:** `~/path/to/your-repo/`
-- **Remote URL:** `https://github.com/OWNER/REPO` <!-- or GitLab, Bitbucket, etc. -->
-- **Languages:** [your languages]
-- **Test command:** `[your test command, e.g., npm test, pytest, cargo test]`
-- **CI:** [your CI system, e.g., GitHub Actions, GitLab CI, Jenkins]
-- **Architecture docs:** `[path to architecture docs, if any]`
-- **Coding guidelines:** `CLAUDE.md` (repo root)
-- **Knowledge base:** `[path to any incident log or findings file — optional]`
-- **Worktree parent:** `~/path/to/worktrees/` (worktrees live as siblings to your repo)
-- **Default branch:** `main` <!-- CUSTOMIZE: main or master -->
+Read `.claude/agents/_project-context.md` for project details (repo path, languages, test commands, CI, worktree parent, etc.).
+
+> **Fallback:** If `_project-context.md` is missing, fill in the values directly here:
+> - **Repo:** `~/path/to/your-repo/`
+> - **Languages:** [your languages]
+> - **Test command:** `[your test command]`
+> - **Default branch:** `main`
 
 ## Tracker Commands Reference
 
-<!-- CUSTOMIZE: Uncomment the section matching your tracker and delete the rest -->
+Read `.claude/agents/_tracker-commands.md` for issue tracker CLI commands.
 
-<!-- === GitHub === -->
-<!-- List issues: gh issue list --state open --json number,title,labels --limit 50 -->
-<!-- Read issue: gh issue view <N> --comments -->
-<!-- Post comment: gh issue comment <N> --body "..." -->
-<!-- Add label: gh issue edit <N> --add-label "ready-to-assign" -->
-<!-- Remove label: gh issue edit <N> --remove-label "more-research-needed" -->
-<!-- Create label: gh label create "ready-to-merge" --color "0E8A16" --description "Reviewer recommends merge" -->
-<!-- List PRs: gh pr list --head <branch> --json number,state -->
-<!-- Check CI: gh pr checks <N> -->
-<!-- PR fields: state, mergedAt, title, body, number, headRefName, additions, deletions, files, statusCheckRollup -->
-<!-- Note: gh issue view N only shows the body. Use --comments to see research context. -->
-
-<!-- === GitLab === -->
-<!-- List issues: glab issue list --state opened -->
-<!-- Read issue: glab issue view <N> --comments -->
-<!-- Post comment: glab issue note <N> --message "..." -->
-<!-- Add label: glab issue update <N> --label "ready-to-assign" -->
-<!-- Remove label: glab issue update <N> --unlabel "more-research-needed" -->
-<!-- List MRs: glab mr list -->
-<!-- Check CI: glab ci status -->
-
-<!-- === Linear === -->
-<!-- List issues: linear issue list --team <TEAM> --status "Todo" -->
-<!-- Read issue: linear issue view <ID> -->
-<!-- Post comment: linear comment create --issue <ID> --body "..." -->
-<!-- Update status: linear issue update <ID> --status "In Progress" -->
-
-<!-- === Jira === -->
-<!-- List issues: jira issue list --project <KEY> --status "To Do" -->
-<!-- Read issue: jira issue view <KEY> -->
-<!-- Post comment: jira issue comment add <KEY> --body "..." -->
-<!-- Transition: jira issue transition <KEY> "In Progress" -->
-
-<!-- === Local files (no external tracker) === -->
-<!-- List tasks: ls tasks/*.yaml -->
-<!-- Read task: cat tasks/<name>.yaml -->
-<!-- Post findings: write to tasks/<name>.research.md or tasks/<name>.review.md -->
-<!-- Track status: update tasks/state.json directly -->
+> **Fallback:** If `_tracker-commands.md` is missing, fill in your tracker commands directly here.
 
 ---
 
@@ -207,9 +166,8 @@ mkdir -p ~/path/to/your-repo/tasks
 echo '{"tasks":{},"worktrees":{},"ready_for_human":[]}' > ~/path/to/your-repo/tasks/state.json
 touch ~/path/to/your-repo/tasks/learnings.jsonl
 
-# CUSTOMIZE: Create labels using your tracker's CLI
-# GitHub: gh label create "ready-to-merge" --color "0E8A16" --description "Reviewer recommends merge" --force
-# GitLab: glab label create "ready-to-merge" --color "#0E8A16" --description "Reviewer recommends merge"
+# CUSTOMIZE: Create the status labels listed in docs/customization-guide.md Step 3
+# Use your tracker's label creation commands from _tracker-commands.md
 ```
 
 **Step 3: Fetch open issues** (all modes):

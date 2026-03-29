@@ -44,18 +44,13 @@ You don't need a template — just describe your project clearly. If you're usin
 
 ### 3. Fill in Project Context
 
-Open each agent file and update the `<!-- CUSTOMIZE -->` sections:
+Edit the shared project context file — all agents read this automatically:
 
 ```bash
-# Edit all five:
-$EDITOR .claude/agents/orchestrator.md
-$EDITOR .claude/agents/researcher.md
-$EDITOR .claude/agents/worker.md
-$EDITOR .claude/agents/reviewer.md
-$EDITOR .claude/agents/ux-reviewer.md
+$EDITOR .claude/agents/_project-context.md
 ```
 
-At minimum, set in each file:
+At minimum, set:
 - **Repo path** — absolute path to your repo
 - **Languages** — what your project uses
 - **Test command** — how to run tests (e.g., `npm test`, `pytest`)
@@ -63,12 +58,18 @@ At minimum, set in each file:
 
 ### 4. Choose your tracker
 
-In each agent file, uncomment the command block for your issue tracker (GitHub, GitLab, Linear, Jira, or local files) and delete the others.
+Edit the shared tracker commands file — uncomment the section for your platform and delete the rest:
+
+```bash
+$EDITOR .claude/agents/_tracker-commands.md
+```
 
 ### 5. Create status labels
 
+Create the four required status labels in your tracker. See [Customization Guide — Step 3](docs/customization-guide.md#step-3-set-up-labels) for full commands and optional labels.
+
 ```bash
-# GitHub example (adapt for your platform):
+# GitHub quick version:
 gh label create "more-research-needed" --color "FBCA04" --description "Needs investigation"
 gh label create "ready-to-assign" --color "0075CA" --description "Ready for worker agent"
 gh label create "ready-to-merge" --color "0E8A16" --description "Reviewer recommends merge"
