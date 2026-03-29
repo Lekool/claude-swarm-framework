@@ -261,7 +261,9 @@ Add `Bash(ssh:*)` to your `settings.local.json` permissions.
 
 ### Custom Agent Roles
 
-You can create additional agent roles beyond the four defaults. Common additions:
+The framework includes a **UX Reviewer** (`ux-reviewer.md`) for frontend-heavy projects. The orchestrator automatically dispatches it when a PR touches frontend files (components, styles, layouts). The UX reviewer learns the user's design taste before reviewing and may request screenshots when it needs to see rendered output. See the agent definition for the full taste discovery workflow.
+
+You can create additional agent roles beyond the five defaults. Common additions:
 
 - **Doc Writer** — generates documentation from code changes (read-only + writes docs)
 - **Migration Author** — writes database migration scripts (scoped write access)

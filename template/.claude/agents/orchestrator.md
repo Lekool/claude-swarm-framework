@@ -405,10 +405,19 @@ tmux capture-pane -t swarm:worker-01 -p | tail -5
 
 ### Phase 6: Review
 
-Once a PR/MR has green CI:
+Once a PR/MR has green CI, decide which reviewer(s) to dispatch:
+
+**Choosing the right reviewer:**
+- **Generic `reviewer`** — for backend, infrastructure, data, and non-visual code changes
+- **`ux-reviewer`** — for PRs that touch frontend components, styles, layouts, or user-facing UI
+- **Both** — for full-stack PRs that have both backend logic and frontend changes. Dispatch both in parallel; both must recommend merge before labeling `ready-to-merge`
+
+To determine if a PR touches frontend code, check the file list:
+- Components (`.tsx`, `.jsx`, `.vue`, `.svelte`), styles (`.css`, `.scss`, `.tailwind`), templates, layouts -> dispatch `ux-reviewer`
+- The `ux-reviewer` may request screenshots from the human before completing its review — this is expected and adds a round-trip
 
 ```bash
-# Write prompt to file
+# Generic review
 cat > /tmp/review-pr-18.txt << 'PROMPT'
 Review PR #18 for issue #42.
 Read the issue with comments for context, then read the PR diff.
@@ -418,14 +427,27 @@ PROMPT
 tmux send-keys -t swarm:reviewer-01 \
   "cd ~/path/to/your-repo && cat /tmp/review-pr-18.txt | claude --dangerously-skip-permissions --agent reviewer" Enter
 
-# Verify agent started
+# UX review (for frontend PRs — dispatch in parallel if also doing generic review)
+cat > /tmp/ux-review-pr-18.txt << 'PROMPT'
+UX review PR #18 for issue #42.
+Read the issue with comments for context, then read the PR diff.
+Focus on visual consistency, accessibility, responsiveness, and interaction states.
+If you need screenshots to evaluate the rendered output, request them on the issue.
+PROMPT
+
+tmux send-keys -t swarm:ux-reviewer-01 \
+  "cd ~/path/to/your-repo && cat /tmp/ux-review-pr-18.txt | claude --dangerously-skip-permissions --agent ux-reviewer" Enter
+
+# Verify agents started
 sleep 5 && tmux capture-pane -t swarm:reviewer-01 -p | tail -3
+sleep 5 && tmux capture-pane -t swarm:ux-reviewer-01 -p | tail -3
 ```
 
-The reviewer evaluates and posts a comment on the issue with their recommendation.
+The reviewer(s) evaluate and post comments on the issue with their recommendations.
 
-- **Recommends merge** -> label `ready-to-merge`, task status becomes `ready-for-human`
-- **Recommends changes** -> orchestrator creates a revision task, re-dispatches worker
+- **All dispatched reviewers recommend merge** -> label `ready-to-merge`, task status becomes `ready-for-human`
+- **Any reviewer recommends changes** -> orchestrator creates a revision task, re-dispatches worker
+- **UX reviewer requests screenshots** -> post a comment tagging the human, wait for screenshots, then the UX reviewer continues
 - **3 failed revision cycles** -> label `human-only`, move to Blocked, post comment explaining what failed
 
 ### Phase 7: Ready for Human

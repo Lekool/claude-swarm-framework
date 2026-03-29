@@ -9,6 +9,7 @@ An **orchestrator** agent reads your issue tracker, breaks work into scoped task
 - **Researcher** — investigates issues, explores the codebase, posts implementation context (read-only)
 - **Worker** — implements changes in an isolated git worktree, runs tests, opens a PR/MR
 - **Reviewer** — evaluates the PR/MR for correctness, scope, and patterns (read-only)
+- **UX Reviewer** — evaluates frontend PRs for visual consistency, accessibility, responsiveness, and design system adherence. Learns the user's taste before reviewing (read-only)
 
 The **human** retains merge and deploy authority. No agent can merge to the default branch or touch production.
 
@@ -22,7 +23,7 @@ Issue Tracker ──> Orchestrator ──> Researcher ──> Worker ──> Rev
 
 | Design choice | Rationale |
 |---|---|
-| **4 separate roles** | Safety through separation — read-only agents can't introduce bugs, workers can't merge |
+| **5 roles (4 core + UX)** | Safety through separation — read-only agents can't introduce bugs, workers can't merge. UX reviewer adds design-aware evaluation for frontend work |
 | **tmux orchestration** | True process isolation, observable (capture pane output), redirectable (type into agent mid-task) |
 | **Git worktrees** | Multiple workers run in parallel without file conflicts; pure git, works with any hosting platform |
 | **Issue tracker as comm channel** | Human doesn't need to sit at the terminal; async by default |
@@ -52,10 +53,11 @@ See [QUICKSTART.md](QUICKSTART.md) for a 5-minute setup, or read on for the full
 template/
 ├── .claude/
 │   ├── agents/
-│   │   ├── orchestrator.md    # Coordinates the swarm (~550 lines)
+│   │   ├── orchestrator.md    # Coordinates the swarm (~600 lines)
 │   │   ├── researcher.md      # Investigates issues (~90 lines)
 │   │   ├── worker.md          # Implements code changes (~80 lines)
-│   │   └── reviewer.md        # Evaluates PRs/MRs (~110 lines)
+│   │   ├── reviewer.md        # Evaluates PRs/MRs (~110 lines)
+│   │   └── ux-reviewer.md     # Evaluates frontend UX (~200 lines)
 │   └── settings.local.json    # Minimal permission allowlist
 ├── scripts/
 │   └── check-agents.sh        # Tmux monitor (detects completion, errors, stuck agents)

@@ -46,8 +46,9 @@ The swarm is a set of specialized Claude Code agents that collaborate through an
 | **Researcher** | Issues, codebase, tests, production (read-only) | One comment on the issue | Main repo | Investigates issues; produces briefings for workers |
 | **Worker** | Task YAML, issue comments, codebase | Code, tests, commits, PRs/MRs | Isolated worktree | Implements scoped changes |
 | **Reviewer** | Issue comments, PR diff, CI status | One comment on the issue | Main repo | Evaluates quality; recommends merge or changes |
+| **UX Reviewer** | Issue comments, PR diff, taste profile, design system | One comment (may request screenshots first) | Main repo | Evaluates frontend UX against user's design preferences |
 
-### Why four roles and not one?
+### Why five roles and not one?
 
 **Safety through separation of concerns.** Each role has strict boundaries:
 
@@ -55,6 +56,7 @@ The swarm is a set of specialized Claude Code agents that collaborate through an
 - **Researchers** are read-only — they explore freely without risk of modifying anything.
 - **Workers** write code but only in isolated worktrees — they can't corrupt the main branch or affect other workers.
 - **Reviewers** are read-only — they evaluate independently without the temptation to "just fix it."
+- **UX Reviewers** are read-only with a design-specific lens — they evaluate frontend work against the user's stated taste and design goals, not their own opinions. They can request screenshots when they need to see rendered output.
 
 The **human** retains the most consequential actions: merging to the default branch and deploying to production. No agent can do either.
 
