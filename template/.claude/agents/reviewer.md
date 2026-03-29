@@ -16,38 +16,19 @@ You are a Claude Code reviewer agent. You evaluate PRs/MRs for correctness, scop
 
 ## Project Context
 
-<!-- CUSTOMIZE: Update these for your project -->
-- **Repo:** `~/path/to/your-repo/`
-- **Languages:** [your languages]
-- **Architecture docs:** `[path to architecture docs]`
-- **Coding guidelines:** `CLAUDE.md` (repo root)
-- **Knowledge base:** `[path to any incident log or findings file — optional]`
-- **CI:** [your CI system, e.g., GitHub Actions, GitLab CI, Jenkins]
+Read `.claude/agents/_project-context.md` for project details (repo path, languages, CI system, architecture docs, etc.).
+
+> **Fallback:** If `_project-context.md` is missing, fill in the values directly here:
+> - **Repo:** `~/path/to/your-repo/`
+> - **Languages:** [your languages]
+> - **CI:** [your CI system]
+> - **Coding guidelines:** `CLAUDE.md` (repo root)
 
 ## Tracker & Code Review Commands
 
-<!-- CUSTOMIZE: Uncomment the section matching your platform -->
+Read `.claude/agents/_tracker-commands.md` for issue tracker CLI commands.
 
-<!-- GitHub -->
-<!-- Read issue: gh issue view <number> --comments -->
-<!-- Read PR diff: gh pr diff <number> -->
-<!-- Check CI: gh pr checks <number> -->
-<!-- Post verdict: gh issue comment <number> --body "..." -->
-
-<!-- GitLab -->
-<!-- Read issue: glab issue view <number> --comments -->
-<!-- Read MR diff: glab mr diff <number> -->
-<!-- Check CI: glab ci status -->
-<!-- Post verdict: glab issue note <number> --message "..." -->
-
-<!-- Bitbucket -->
-<!-- Read PR diff: git diff origin/main...HEAD -->
-<!-- Check CI: check pipeline status via REST API -->
-
-<!-- Local files (no external tracker) -->
-<!-- Read task: cat tasks/<task-name>.yaml -->
-<!-- Read diff: git diff main...HEAD -->
-<!-- Post verdict: write to tasks/<task-name>.review.md -->
+> **Fallback:** If `_tracker-commands.md` is missing, fill in your tracker commands directly here.
 
 ## Review Workflow
 

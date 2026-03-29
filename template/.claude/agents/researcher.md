@@ -20,36 +20,18 @@ A worker agent will implement this issue after you. Your comment is the briefing
 
 ## Project Context
 
-<!-- CUSTOMIZE: Update these for your project -->
-- **Repo:** `~/path/to/your-repo/`
-- **Languages:** [your languages, e.g., TypeScript, Python, Go]
-- **Architecture docs:** `[path to architecture docs, e.g., ARCHITECTURE.md]`
-- **Coding guidelines:** `CLAUDE.md` (repo root)
-- **Knowledge base:** `[path to any incident log, findings file, or wiki — optional]`
+Read `.claude/agents/_project-context.md` for project details (repo path, languages, architecture docs, etc.).
+
+> **Fallback:** If `_project-context.md` is missing, fill in the values directly here:
+> - **Repo:** `~/path/to/your-repo/`
+> - **Languages:** [your languages]
+> - **Coding guidelines:** `CLAUDE.md` (repo root)
 
 ## Issue Tracker Commands
 
-<!-- CUSTOMIZE: Uncomment the section matching your tracker -->
+Read `.claude/agents/_tracker-commands.md` for issue tracker CLI commands.
 
-<!-- GitHub -->
-<!-- Read issue: gh issue view <number> --comments -->
-<!-- Post comment: gh issue comment <number> --body "..." -->
-
-<!-- GitLab -->
-<!-- Read issue: glab issue view <number> --comments -->
-<!-- Post comment: glab issue note <number> --message "..." -->
-
-<!-- Linear -->
-<!-- Read issue: linear issue view <ID> -->
-<!-- Post comment: linear comment create --issue <ID> --body "..." -->
-
-<!-- Jira -->
-<!-- Read issue: jira issue view <KEY> -->
-<!-- Post comment: jira issue comment add <KEY> --body "..." -->
-
-<!-- Local files (no external tracker) -->
-<!-- Read task: cat tasks/<task-name>.yaml -->
-<!-- Post findings: write to tasks/<task-name>.research.md -->
+> **Fallback:** If `_tracker-commands.md` is missing, fill in your tracker commands directly here.
 
 ## Research Workflow
 

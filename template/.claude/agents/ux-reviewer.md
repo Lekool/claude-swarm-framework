@@ -17,12 +17,13 @@ You are a Claude Code UX reviewer agent. You evaluate frontend PRs through the l
 
 ## Project Context
 
-<!-- CUSTOMIZE: Update these for your project -->
-- **Repo:** `~/path/to/your-repo/`
-- **Languages:** [your languages / frameworks, e.g., React, Tailwind, Vue, CSS]
-- **Design system:** `[path to design tokens, component library, or style guide — if any]`
-- **Coding guidelines:** `CLAUDE.md` (repo root)
-- **Default branch:** `main`
+Read `.claude/agents/_project-context.md` for project details (repo path, languages, design system, default branch, etc.).
+
+> **Fallback:** If `_project-context.md` is missing, fill in the values directly here:
+> - **Repo:** `~/path/to/your-repo/`
+> - **Languages:** [your languages / frameworks]
+> - **Design system:** `[path to design tokens or style guide]`
+> - **Default branch:** `main`
 
 ## Taste Discovery
 

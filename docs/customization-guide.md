@@ -4,7 +4,7 @@ Step-by-step guide to adapting the swarm framework for your project.
 
 ## Step 1: Project Context
 
-Every agent definition has a `## Project Context` section with `<!-- CUSTOMIZE -->` markers. Fill these in for your project:
+Edit `.claude/agents/_project-context.md` — this is the single source of truth that all five agents read at startup. Fill in the `<!-- CUSTOMIZE -->` fields for your project:
 
 ```markdown
 - **Repo:** ~/path/to/your-repo/
@@ -16,18 +16,14 @@ Every agent definition has a `## Project Context` section with `<!-- CUSTOMIZE -
 - **Coding guidelines:** CLAUDE.md
 - **Default branch:** main
 - **Worktree parent:** ~/worktrees/ (worktrees live as siblings to your repo)
+- **Design system:** src/styles/tokens.css (optional, for ux-reviewer)
 ```
 
-Update this section in all five agent files:
-- `.claude/agents/orchestrator.md`
-- `.claude/agents/researcher.md`
-- `.claude/agents/worker.md`
-- `.claude/agents/reviewer.md`
-- `.claude/agents/ux-reviewer.md`
+You edit this once — all agents pick it up automatically. Each agent file also has a fallback section you can fill in directly if the shared file is missing.
 
 ## Step 2: Choose Your Issue Tracker
 
-Each agent file has a `## Tracker Commands` section with commented-out blocks for different platforms. Uncomment the one you use and delete the rest.
+Edit `.claude/agents/_tracker-commands.md` — uncomment the section matching your platform and delete the rest. All agents read this file for tracker CLI commands.
 
 ### GitHub
 
