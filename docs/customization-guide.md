@@ -238,7 +238,7 @@ Claude Code reads `CLAUDE.md` from the repo root at the start of every session. 
 - **Architecture overview** — or a pointer to your architecture docs
 - **Anything agents should avoid** — files not to touch, patterns not to use, known gotchas
 
-You don't need a template for this — just describe your project clearly. If you're using Claude Code to set up the swarm, ask it to generate the `CLAUDE.md` for you based on your repo.
+**If your repo doesn't have a `CLAUDE.md` yet, create one now.** This is the single most impactful step — without it, agents will waste time rediscovering project context or make wrong assumptions. You don't need a template — just describe your project clearly. If you're using Claude Code to set up the swarm, ask it to generate the `CLAUDE.md` for you based on your repo.
 
 **Optional additional docs to reference:**
 
