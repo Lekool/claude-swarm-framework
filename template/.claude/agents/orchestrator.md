@@ -288,7 +288,7 @@ PROMPT
 
 # CUSTOMIZE: Update repo path and agent invocation
 tmux send-keys -t swarm:researcher-01 \
-  "cd ~/path/to/your-repo && cat /tmp/research-42.txt | claude --dangerously-skip-permissions --agent researcher" Enter
+  "cd ~/path/to/your-repo && cat /tmp/research-42.txt | claude --dangerously-skip-permissions --permission-mode bypassPermissions --agent researcher" Enter
 
 # Verify agent started (wait 5s, then check)
 sleep 5 && tmux capture-pane -t swarm:researcher-01 -p | tail -3
@@ -318,6 +318,9 @@ For each task ready for implementation:
 # Create worktree from the default branch
 git -C ~/path/to/your-repo worktree add ~/worktrees/wt-01 -b feature/task-name main
 
+# Copy .claude/ into the worktree so settings and agent definitions are available
+cp -r ~/path/to/your-repo/.claude ~/worktrees/wt-01/
+
 # Install dependencies in the worktree (if applicable)
 cd ~/worktrees/wt-01 && npm install  # or pip install, cargo build, etc.
 
@@ -329,7 +332,7 @@ PROMPT
 
 # Launch worker
 tmux send-keys -t swarm:worker-01 \
-  "cd ~/worktrees/wt-01 && cat /tmp/worker-task-name.txt | claude --dangerously-skip-permissions --agent worker" Enter
+  "cd ~/worktrees/wt-01 && cat /tmp/worker-task-name.txt | claude --dangerously-skip-permissions --permission-mode bypassPermissions --agent worker" Enter
 
 # Verify agent started
 sleep 5 && tmux capture-pane -t swarm:worker-01 -p | tail -3
@@ -383,7 +386,7 @@ PROMPT
 
 # CUSTOMIZE: Update repo path
 tmux send-keys -t swarm:reviewer-01 \
-  "cd ~/path/to/your-repo && cat /tmp/review-pr-18.txt | claude --dangerously-skip-permissions --agent reviewer" Enter
+  "cd ~/path/to/your-repo && cat /tmp/review-pr-18.txt | claude --dangerously-skip-permissions --permission-mode bypassPermissions --agent reviewer" Enter
 
 # UX review (for frontend PRs — dispatch in parallel if also doing generic review)
 cat > /tmp/ux-review-pr-18.txt << 'PROMPT'
@@ -394,7 +397,7 @@ If you need screenshots to evaluate the rendered output, request them on the iss
 PROMPT
 
 tmux send-keys -t swarm:ux-reviewer-01 \
-  "cd ~/path/to/your-repo && cat /tmp/ux-review-pr-18.txt | claude --dangerously-skip-permissions --agent ux-reviewer" Enter
+  "cd ~/path/to/your-repo && cat /tmp/ux-review-pr-18.txt | claude --dangerously-skip-permissions --permission-mode bypassPermissions --agent ux-reviewer" Enter
 
 # Verify agents started
 sleep 5 && tmux capture-pane -t swarm:reviewer-01 -p | tail -3

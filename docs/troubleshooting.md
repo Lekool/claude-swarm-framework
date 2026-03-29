@@ -16,7 +16,7 @@ It can span as many lines as needed.
 PROMPT
 
 tmux send-keys -t swarm:worker-01 \
-  "cd ~/worktrees/wt-01 && cat /tmp/worker-task.txt | claude --dangerously-skip-permissions --agent worker" Enter
+  "cd ~/worktrees/wt-01 && cat /tmp/worker-task.txt | claude --dangerously-skip-permissions --permission-mode bypassPermissions --agent worker" Enter
 ```
 
 Never use inline `-p '...'` or `$(cat file)` expansion in tmux — both are unreliable.
@@ -40,7 +40,43 @@ Common causes:
 
 **Problem:** Agent stopped because it hit a tool that requires user approval.
 
-**Fix:** Either answer it via `tmux send-keys`, or kill and re-dispatch with `--dangerously-skip-permissions`. Better yet, add the permission to `settings.local.json` before dispatching.
+**Fix:** Either answer it via `tmux send-keys`, or kill and re-dispatch with `--dangerously-skip-permissions --permission-mode bypassPermissions`. Better yet, add the permission to `settings.local.json` before dispatching.
+
+### Workers stuck on Edit/Write file permission prompts in worktrees
+
+**Problem:** Workers get stuck on interactive prompts like "Do you want to create file.ts?" for every file they try to create or edit. The "allow all edits this session" option doesn't persist across different files.
+
+**Root cause:** Three things combine to cause this:
+
+1. **`settings.local.json` missing `Edit`/`Write`** — the template only listed `Bash(...)` permissions. Claude Code's `Edit` and `Write` file tools are separate and need their own allowlist entries.
+2. **Worktrees don't inherit `.claude/`** — Git worktrees are bare checkouts that don't include `.claude/settings.local.json` from the source repo. Claude Code resolves settings from the working directory.
+3. **`--dangerously-skip-permissions` only covers Bash** — it bypasses Bash command prompts but not `Edit`/`Write` file tool prompts. You also need `--permission-mode bypassPermissions`.
+
+**Fix (belt and suspenders — do all three):**
+
+1. Add `Edit` and `Write` to `settings.local.json`:
+   ```json
+   {
+     "permissions": {
+       "allow": [
+         "Edit",
+         "Write",
+         "Bash(git:*)",
+         ...
+       ]
+     }
+   }
+   ```
+
+2. Copy `.claude/` into each worktree before dispatching:
+   ```bash
+   cp -r ~/path/to/your-repo/.claude ~/worktrees/wt-01/
+   ```
+
+3. Use both flags when dispatching:
+   ```bash
+   claude --dangerously-skip-permissions --permission-mode bypassPermissions --agent worker
+   ```
 
 ## Worktree Issues
 
