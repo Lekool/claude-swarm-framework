@@ -53,11 +53,11 @@ See [QUICKSTART.md](QUICKSTART.md) for a 5-minute setup, or read on for the full
 template/
 ├── .claude/
 │   ├── agents/
-│   │   ├── orchestrator.md    # Coordinates the swarm (~600 lines)
-│   │   ├── researcher.md      # Investigates issues (~90 lines)
-│   │   ├── worker.md          # Implements code changes (~80 lines)
-│   │   ├── reviewer.md        # Evaluates PRs/MRs (~110 lines)
-│   │   └── ux-reviewer.md     # Evaluates frontend UX (~200 lines)
+│   │   ├── orchestrator.md    # Coordinates the swarm
+│   │   ├── researcher.md      # Investigates issues
+│   │   ├── worker.md          # Implements code changes
+│   │   ├── reviewer.md        # Evaluates PRs/MRs
+│   │   └── ux-reviewer.md     # Evaluates frontend UX
 │   └── settings.local.json    # Minimal permission allowlist
 ├── scripts/
 │   └── check-agents.sh        # Tmux monitor (detects completion, errors, stuck agents)

@@ -7,7 +7,7 @@ Step-by-step guide to adapting the swarm framework for your project.
 Every agent definition has a `## Project Context` section with `<!-- CUSTOMIZE -->` markers. Fill these in for your project:
 
 ```markdown
-- **Repo:** ~/projects/my-app/
+- **Repo:** ~/path/to/your-repo/
 - **Remote URL:** https://github.com/myorg/my-app
 - **Languages:** TypeScript, Go
 - **Test command:** npm test
@@ -15,7 +15,7 @@ Every agent definition has a `## Project Context` section with `<!-- CUSTOMIZE -
 - **Architecture docs:** docs/ARCHITECTURE.md
 - **Coding guidelines:** CLAUDE.md
 - **Default branch:** main
-- **Worktree parent:** ~/projects/ (worktrees live as siblings to your repo)
+- **Worktree parent:** ~/worktrees/ (worktrees live as siblings to your repo)
 ```
 
 Update this section in all five agent files:
@@ -170,6 +170,8 @@ Edit `.claude/settings.local.json` to add permissions for your project's tooling
 
 The template includes minimal git and CLI permissions. Add your project-specific tools:
 
+> **Note:** JSON does not support comments. The `//` lines in the example below are for illustration only — remove them and uncomment only the permissions you need.
+
 ```json
 {
   "permissions": {
@@ -220,8 +222,6 @@ The template includes minimal git and CLI permissions. Add your project-specific
   }
 }
 ```
-
-**Note:** JSON does not support comments. The `//` lines above are for illustration — remove them and uncomment only the permissions you need.
 
 ## Step 6: Create Your `CLAUDE.md`
 

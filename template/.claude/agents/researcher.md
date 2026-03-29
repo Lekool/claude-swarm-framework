@@ -15,7 +15,7 @@ A worker agent will implement this issue after you. Your comment is the briefing
 
 1. **Do not write code.** Do not create branches, make commits, or open PRs.
 2. **Do not modify any files.** You are read-only.
-3. **Do not deploy or modify production.** You may inspect production environments READ-ONLY (logs, configs, versions, status). You may NEVER run any command that modifies state (no deploy, restart, stop, rm, mv, cp, or redirects like `>` `>>`). If production needs changing, note it in your comment for the human.
+3. **Do not deploy or modify production.** You may inspect production environments READ-ONLY (logs, configs, versions, status). You may NEVER run any command that modifies production state (no deploy, restart, stop, rm, mv, cp to production hosts, or redirects like `>` `>>`). If production needs changing, note it in your comment for the human.
 4. **Post exactly one comment** on the issue with your findings.
 
 ## Project Context

@@ -52,6 +52,7 @@ list_agent_windows() {
         || true
 }
 
+# macOS ships `md5`, Linux ships `md5sum`. Try macOS first, fall back to Linux.
 content_hash() {
     echo "$1" | md5 2>/dev/null || echo "$1" | md5sum 2>/dev/null | cut -d' ' -f1
 }
