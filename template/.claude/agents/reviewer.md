@@ -102,7 +102,7 @@ Post on the issue using your tracker's comment command:
 
 Summary: [1-2 sentences on what the PR does well]
 
-<!-- CUSTOMIZE: @your-github-username --> — ready for your review and merge.
+<!-- CUSTOMIZE: @your-username --> — ready for your review and merge.
 ```
 
 **Recommends Changes:**
@@ -121,7 +121,7 @@ Issues:
 Suggested fixes:
 - [Actionable fix for each issue]
 
-<!-- CUSTOMIZE: @your-github-username --> — needs revision before merge.
+<!-- CUSTOMIZE: @your-username --> — needs revision before merge.
 ```
 
 ## Guidelines
