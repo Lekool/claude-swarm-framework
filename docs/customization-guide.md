@@ -134,31 +134,108 @@ Optional but recommended labels:
 - **Type:** `feature`, `bug`, `refactor`, `docs`
 - **Area:** project-specific (e.g., `area/api`, `area/frontend`, `area/auth`)
 
-## Step 4: Set Up a Project Board (Optional)
+## Step 4: Project Board Integration (Recommended)
 
-A Kanban board helps visualize the pipeline. Set up columns:
+A Kanban board gives you and the orchestrator a shared view of the pipeline. The orchestrator updates the board at every phase transition (triage, research, dispatch, review, merge). Set up columns:
 
 ```
-Blocked -> Todo -> More Research Needed -> Ready to Assign -> In Progress -> Done
+Blocked -> Todo -> More Research Needed -> Ready to Assign -> In Progress -> In Review -> Ready to Merge -> Done
 ```
 
-### GitHub Projects
+### 4a. Create or configure your board
+
+<!-- CUSTOMIZE: Follow the instructions for your platform below. -->
+
+**GitHub Projects (v2):**
 
 ```bash
-# Discover your project ID and field IDs
+# 1. Create a project (or use an existing one)
+gh project create --owner YOUR_ORG --title "My Project Board"
+
+# 2. Discover the project number and ID
 gh project list --owner YOUR_ORG --format json
+
+# 3. Discover field IDs (Status field and its option IDs)
+gh project field-list PROJECT_NUMBER --owner YOUR_ORG --format json
+
+# 4. Create a Priority field if it doesn't exist
+gh project field-create PROJECT_NUMBER --owner YOUR_ORG \
+  --name "Priority" --data-type "SINGLE_SELECT" \
+  --single-select-options "P0-critical,P1-high,P2-medium,P3-low"
+
+# 5. Re-query fields to get the Priority field ID and option IDs
 gh project field-list PROJECT_NUMBER --owner YOUR_ORG --format json
 ```
 
-Update the orchestrator with your project ID and field option IDs for moving items between columns.
+> **Note:** GitHub Projects v2 uses opaque IDs for everything — project ID, field IDs, option IDs. These must be discovered via the commands above and cached.
 
-### GitLab Boards
+**GitLab Boards:**
 
-Create a board in your GitLab project settings. Map labels to columns.
+Create a board in your GitLab project settings. Map labels to columns — each column corresponds to a label (e.g., `In Progress`, `In Review`). The orchestrator moves items by updating labels.
 
-### Linear / Jira
+**Linear:**
 
-These have built-in workflow states that serve the same purpose. Map the swarm's status labels to your existing workflow states.
+Linear has built-in workflow states. Map the swarm's columns to your team's states (e.g., "Todo" -> "Todo", "In Progress" -> "In Progress"). No extra setup needed — the orchestrator uses `linear issue update` to transition states.
+
+**Jira:**
+
+Jira has built-in workflow transitions. Map the swarm's columns to your project's statuses. The orchestrator uses `jira issue transition` to move items.
+
+### 4b. Cache board IDs in `tasks/board-config.json`
+
+To avoid re-querying the API every session, save the discovered IDs in `tasks/board-config.json`. A placeholder template is included — fill it in with your actual values:
+
+```json
+{
+  "_comment": "Cache your project board IDs here.",
+  "platform": "github",
+  "project_id": "PVT_kwHOABCDEF...",
+  "project_number": 1,
+  "owner": "your-org",
+  "status_field_id": "PVTSSF_lAHOABCDEF...",
+  "status_options": {
+    "Todo": "98765aaa",
+    "More Research Needed": "98765bbb",
+    "In Progress": "98765ccc",
+    "Ready to Assign": "98765hhh",
+    "In Review": "98765ddd",
+    "Ready to Merge": "98765eee",
+    "Blocked": "98765fff",
+    "Done": "98765ggg"
+  },
+  "priority_field_id": "PVTSSF_lAHOXYZ...",
+  "priority_options": {
+    "P0-critical": "option_id_1",
+    "P1-high": "option_id_2",
+    "P2-medium": "option_id_3",
+    "P3-low": "option_id_4"
+  },
+  "items": {}
+}
+```
+
+For **GitLab**, **Linear**, and **Jira**, you may not need opaque IDs — the orchestrator uses labels or workflow transitions directly. You can simplify the config to just `platform` and skip the ID fields, or omit the file entirely.
+
+### 4c. Verify the orchestrator can move items
+
+Test a board update manually to confirm the IDs are correct:
+
+```bash
+# GitHub Projects — move an item to "In Progress":
+gh project item-edit --project-id PVT_kwHOABCDEF... --id ITEM_ID \
+  --field-id PVTSSF_lAHOABCDEF... --single-select-option-id 98765ccc
+
+# GitLab — swap labels:
+glab issue update 42 --unlabel "Todo" --label "In Progress"
+
+# Linear:
+linear issue update ENG-123 --status "In Progress"
+
+# Jira:
+jira issue transition MYPROJ-123 "In Progress"
+```
+
+If the command succeeds, the orchestrator will be able to manage the board autonomously. If `tasks/board-config.json` is missing or still has placeholder values, the orchestrator skips board updates silently.
 
 ## Step 5: Configure Permissions
 

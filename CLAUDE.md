@@ -25,6 +25,7 @@ template/              # Files users copy into their repos
     check-agents.sh    # Tmux monitor script
   tasks/
     _template.yaml     # Task YAML template
+    board-config.json  # Cached project board IDs (platform, field IDs, option IDs)
 
 examples/              # Example files showing the framework in use
   state.json           # Example mid-session state

@@ -76,6 +76,16 @@ gh label create "ready-to-merge" --color "0E8A16" --description "Reviewer recomm
 gh label create "human-only" --color "D93F0B" --description "Needs human input"
 ```
 
+### 5b. Set up a project board (optional but recommended)
+
+If you use a project board (GitHub Projects, GitLab Boards, Linear, or Jira), the orchestrator can update it automatically at each phase transition. This gives you a real-time Kanban view of the swarm's progress without checking the terminal.
+
+1. Create a board with columns: `Blocked`, `Todo`, `More Research Needed`, `Ready to Assign`, `In Progress`, `In Review`, `Ready to Merge`, `Done`
+2. Fill in `tasks/board-config.json` with your board's IDs (a placeholder template is included)
+3. See [Customization Guide — Step 4](docs/customization-guide.md#step-4-project-board-integration-recommended) for detailed setup instructions per platform
+
+If you skip this step, the orchestrator works fine without a board — it just won't move items between columns.
+
 ### 6. Add project-specific permissions
 
 Edit `.claude/settings.local.json` and add your test runner, linter, and any other tools agents need:

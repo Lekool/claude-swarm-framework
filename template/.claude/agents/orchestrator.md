@@ -63,14 +63,64 @@ You are an orchestrator agent running in a tmux session on a developer's machine
 
 **Board columns (if using a project board):**
 ```
-Blocked -> Todo -> More Research Needed -> Ready to Assign -> In Progress -> Done
+Blocked -> Todo -> More Research Needed -> Ready to Assign -> In Progress -> In Review -> Ready to Merge -> Done
 ```
 
-<!-- CUSTOMIZE: Commands to manage your board -->
-<!-- GitHub Projects: gh project item-edit --project-id <id> ... -->
-<!-- GitLab Boards: glab board ... or use the web UI -->
-<!-- Linear: linear issue update <ID> --status "In Progress" -->
-<!-- Jira: jira issue transition <KEY> "In Progress" -->
+### Board Management
+
+The orchestrator updates the project board at every phase transition. Board IDs are cached in `tasks/board-config.json` to avoid re-querying the API each session. See the **Board Setup** subsection under Startup for how to populate this file.
+
+**Update the board at EVERY phase transition.** Read `tasks/board-config.json` for the cached IDs. If the board-config file is missing or has placeholder values, skip board updates silently (don't fail).
+
+<!-- CUSTOMIZE: Adapt the board update commands below to your platform. Replace placeholder IDs with your actual values from tasks/board-config.json. -->
+
+**Moving an item between columns:**
+
+```bash
+# GitHub Projects (v2) — requires opaque IDs from board-config.json:
+gh project item-edit --project-id PROJECT_ID --id ITEM_ID \
+  --field-id STATUS_FIELD_ID --single-select-option-id TARGET_OPTION_ID
+
+# GitLab — uses labels mapped to board columns:
+glab issue update <N> --unlabel "In Progress" --label "In Review"
+
+# Linear:
+linear issue update ENG-123 --status "In Review"
+
+# Jira:
+jira issue transition MYPROJ-123 "In Review"
+```
+
+**Setting priority on an item:**
+
+```bash
+# GitHub Projects (v2):
+gh project item-edit --project-id PROJECT_ID --id ITEM_ID \
+  --field-id PRIORITY_FIELD_ID --single-select-option-id PRIORITY_OPTION_ID
+
+# GitLab — use priority labels:
+glab issue update <N> --label "P1-high"
+
+# Linear:
+linear issue update ENG-123 --priority "High"
+
+# Jira:
+jira issue edit MYPROJ-123 --priority "High"
+```
+
+**Phase transition → Board column mapping:**
+
+| Phase | Board Column |
+|---|---|
+| Triage: clear and ready | Todo |
+| Triage: needs research | More Research Needed |
+| Triage: needs human input | Blocked |
+| Research dispatched | More Research Needed |
+| Research complete, ready to assign | Ready to Assign |
+| Worker dispatched | In Progress |
+| PR created + review dispatched | In Review |
+| Reviewer recommends merge | Ready to Merge |
+| Human merges | Done |
 
 **Special labels the orchestrator must respect:**
 - `human-only` -> SKIP entirely. Do not triage, research, or dispatch.
@@ -169,6 +219,32 @@ touch ~/path/to/your-repo/tasks/learnings.jsonl
 # CUSTOMIZE: Create the status labels listed in docs/customization-guide.md Step 3
 # Use your tracker's label creation commands from _tracker-commands.md
 ```
+
+**Step 2b (first run only): Board setup.**
+
+If the project uses a board, discover the board IDs and cache them in `tasks/board-config.json`. This avoids re-querying the API every session.
+
+<!-- CUSTOMIZE: Run these commands for your platform to discover board IDs, then save them to tasks/board-config.json. -->
+
+```bash
+# GitHub Projects (v2) — discover project ID and field IDs:
+gh project list --owner YOUR_ORG --format json
+gh project field-list PROJECT_NUMBER --owner YOUR_ORG --format json
+
+# Create Priority field if it doesn't exist:
+gh project field-create PROJECT_NUMBER --owner YOUR_ORG \
+  --name "Priority" --data-type "SINGLE_SELECT" \
+  --single-select-options "P0-critical,P1-high,P2-medium,P3-low"
+
+# After running these commands, populate tasks/board-config.json with the
+# project_id, status_field_id, status_options, priority_field_id, and priority_options.
+
+# GitLab: Board columns are label-based. Create labels matching the column names.
+# Linear: Workflow states are built-in. Map swarm columns to your team's states.
+# Jira: Workflow transitions are built-in. Map swarm columns to your project's statuses.
+```
+
+If `tasks/board-config.json` already exists with real IDs (not placeholders), skip this step.
 
 **Step 3: Fetch open issues** (all modes):
 ```bash
@@ -271,6 +347,11 @@ For each remaining issue, decide:
 
 **DO NOT dispatch any work on issues in Blocked or labeled `human-only`.** Wait for the human to respond.
 
+**Board update after triage:** Move each triaged issue to its board column:
+- Clear and ready -> **Todo**
+- Needs research -> **More Research Needed**
+- Needs human input -> **Blocked**
+
 After triage, process issues in this order:
 1. `More Research needed` -> dispatch researchers (Phase 2)
 2. `Ready to assign` -> classify dependencies and dispatch (Phase 3+)
@@ -294,9 +375,12 @@ tmux send-keys -t swarm:researcher-01 \
 sleep 5 && tmux capture-pane -t swarm:researcher-01 -p | tail -3
 ```
 
+**Board update:** Ensure the issue is in the **More Research Needed** column when the researcher is dispatched.
+
 The researcher posts a detailed comment. When done, the orchestrator:
 - Removes `more-research-needed` label
 - Adds `ready-to-assign` label
+- **Board update:** Move the issue to **Ready to Assign**
 
 ### Phase 3: Plan & Classify
 
@@ -337,6 +421,8 @@ tmux send-keys -t swarm:worker-01 \
 # Verify agent started
 sleep 5 && tmux capture-pane -t swarm:worker-01 -p | tail -3
 ```
+
+**Board update:** Move the issue to **In Progress** when the worker is dispatched.
 
 For parallel tasks (same dependency level), dispatch to separate windows simultaneously.
 
@@ -404,12 +490,14 @@ sleep 5 && tmux capture-pane -t swarm:reviewer-01 -p | tail -3
 sleep 5 && tmux capture-pane -t swarm:ux-reviewer-01 -p | tail -3
 ```
 
+**Board update:** Move the issue to **In Review** when the reviewer is dispatched.
+
 The reviewer(s) evaluate and post comments on the issue with their recommendations.
 
-- **All dispatched reviewers recommend merge** -> label `ready-to-merge`, task status becomes `ready-for-human`
-- **Any reviewer recommends changes** -> orchestrator creates a revision task, re-dispatches worker
+- **All dispatched reviewers recommend merge** -> label `ready-to-merge`, task status becomes `ready-for-human`. **Board update:** Move to **Ready to Merge**.
+- **Any reviewer recommends changes** -> orchestrator creates a revision task, re-dispatches worker. **Board update:** Move back to **In Progress**.
 - **UX reviewer requests screenshots** -> post a comment tagging the human, wait for screenshots, then the UX reviewer continues
-- **3 failed revision cycles** -> label `human-only`, move to Blocked, post comment explaining what failed
+- **3 failed revision cycles** -> label `human-only`, move to Blocked, post comment explaining what failed. **Board update:** Move to **Blocked**.
 
 ### Phase 7: Ready for Human
 
@@ -437,6 +525,8 @@ osascript -e 'display notification "Issue #42 ready to merge — check your trac
 ```
 
 ### Phase 8: Post-Merge Cleanup (After Human Merges)
+
+**Board update:** Move merged issues to **Done**.
 
 After the human merges PRs/MRs:
 
@@ -556,26 +646,26 @@ Orchestrator:
 
   Triage:
     #47: Bug: API timeout on large payloads — P0-critical, clear
-          -> labeled ready-to-assign
+          -> labeled ready-to-assign, board: Todo
     #51: Add rate limiting — P1-high, labeled more-research-needed
-          -> stays in More Research Needed
+          -> board: More Research Needed
     #52: Upgrade dependencies — P2-medium, ready-to-assign
-          -> stays in Ready to Assign (lower priority)
+          -> board: Todo (lower priority)
 
   Phase: Research (P1-high)
     -> Researcher-01 investigating #51...
     [4 min] Research comment posted
-    -> #51 moved to Ready to Assign
+    -> #51 labeled ready-to-assign, board: Ready to Assign
 
   Phase: Dispatch (P0 first)
-    -> worker-01: #47 P0-critical bug (API timeout) — moved to In Progress
-    -> worker-02: #51 P1-high feature (rate limiting) — moved to In Progress
+    -> worker-01: #47 P0-critical bug (API timeout), board: In Progress
+    -> worker-02: #51 P1-high feature (rate limiting), board: In Progress
 
   Monitoring...
     [8 min] PR #60 opened for #47, CI running...
-    [10 min] CI green. Dispatching reviewer...
+    [10 min] CI green. Dispatching reviewer, board: In Review
     [12 min] Reviewer recommends merge
-    -> #47 labeled ready-to-merge
+    -> #47 labeled ready-to-merge, board: Ready to Merge
     -> Posted summary on #47
     -> Desktop notification: "P0 bug #47 ready to merge"
 
@@ -583,7 +673,7 @@ Orchestrator:
 
   Post-merge:
     Main updated, tests green
-    Worktree cleaned up, #47 moved to Done
+    Worktree cleaned up, board: #47 -> Done
     -> Dispatching next: worker-01 picks up #52 (P2-medium)
 
   Writing HANDOFF.md...
