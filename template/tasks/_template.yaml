@@ -1,0 +1,61 @@
+# Task Definition Template
+# ========================
+# Copy this file for each task. The orchestrator creates these; workers consume them.
+# Delete comments once you understand the format.
+
+task: feature/short-name          # Branch name / task identifier
+issue: 42                         # Issue/ticket number in your tracker
+priority: P1-high                 # P0-critical | P1-high | P2-medium
+type: feature                     # feature | bug | refactor | docs | infra
+level: 0                          # Dependency level: 0 = no deps, 1 = depends on level 0, etc.
+
+title: "Short descriptive title"
+
+context: |
+  Background information the worker needs to understand the task.
+  For bugs: root cause analysis, how to reproduce, what's broken.
+  For features: design decisions, user-facing behavior, constraints.
+  Reference research comments: e.g., "Read issue #42 comments for research context"
+
+# Optional: gotchas the worker should know before starting
+important_notes: |
+  Any non-obvious state mismatches, dependency quirks, or traps.
+  Example: "The local node_modules may be out of sync — run npm ci first."
+
+acceptance_criteria:
+  - Criterion 1 (testable, specific)
+  - Criterion 2
+  - All existing tests pass
+  - PR opened against default branch
+
+files:
+  - src/path/to/file1.ts          # Files the worker should modify
+  - src/path/to/file2.ts
+  - tests/path/to/test.ts
+
+# Optional: files the worker must NOT touch (scope guard)
+do_not_modify:
+  - src/path/to/sensitive/file.ts
+
+flow:
+  - "Read issue with comments (research context is there)"
+  - "Read architecture docs and coding guidelines"
+  - "MILESTONE 1 — [description]:"
+  - "  a. First step"
+  - "  b. Second step"
+  - "MILESTONE 2 — [description]:"
+  - "  a. Step"
+  - "Run tests — fix until green"
+  - "Commit and open PR"
+
+# Optional: what to do if the primary approach fails
+fallback: |
+  If [condition], then [alternative approach].
+  Post findings on the issue rather than shipping a broken change.
+
+# Optional: post-deploy verification steps (for the human, not the agent)
+verification_after_deploy: |
+  Steps the human should take after merging and deploying:
+  - Check logs for errors
+  - Verify the feature works end-to-end
+  - Monitor metrics for regressions

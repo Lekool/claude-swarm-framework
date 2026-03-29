@@ -1,0 +1,66 @@
+task: fix/api-timeout-large-payloads
+issue: 47
+priority: P0-critical
+type: bug
+level: 0
+
+title: "Fix API timeout on large payloads"
+
+context: |
+  Users are reporting HTTP 504 Gateway Timeout when uploading files larger
+  than 5MB through the /api/upload endpoint. The issue is in the request
+  body parser — it uses the default 1MB limit and the stream isn't being
+  piped correctly, causing the entire body to buffer in memory.
+
+  Root cause: `express.json()` middleware has a default `limit` of '100kb'.
+  The upload endpoint uses `express.raw()` but inherits the global limit.
+  Large payloads hit the limit, get rejected, and the error isn't caught —
+  the request hangs until the gateway times out.
+
+  Research comment on issue #47 has full stack trace and reproduction steps.
+
+acceptance_criteria:
+  - Upload endpoint accepts files up to 50MB
+  - Requests over 50MB return 413 Payload Too Large (not a timeout)
+  - Existing upload tests pass
+  - New test for the 50MB boundary
+  - No regression on other endpoints (they keep the 100kb default)
+
+files:
+  - src/api/upload.ts
+  - src/middleware/body-parser.ts
+  - tests/api/upload.test.ts
+
+do_not_modify:
+  - src/middleware/auth.ts
+  - src/api/index.ts
+
+flow:
+  - "Read issue #47 with comments for research context"
+  - "Read architecture docs and coding guidelines"
+  - "MILESTONE 1 — Fix the body parser limit:"
+  - "  a. Read src/middleware/body-parser.ts"
+  - "  b. Add per-route limit configuration"
+  - "  c. Set /api/upload to 50MB, keep default at 100kb"
+  - "MILESTONE 2 — Add proper error handling:"
+  - "  a. Read src/api/upload.ts"
+  - "  b. Catch PayloadTooLargeError and return 413"
+  - "  c. Add streaming for large payloads instead of buffering"
+  - "MILESTONE 3 — Tests:"
+  - "  a. Add test for successful 5MB upload"
+  - "  b. Add test for 413 on >50MB upload"
+  - "  c. Add test that other endpoints still reject >100kb"
+  - "Run tests — fix until green"
+  - "Commit and open PR"
+
+fallback: |
+  If the streaming approach is too complex for this PR:
+    1. Just fix the limit (simpler, still resolves the timeout)
+    2. Note streaming as a follow-up in the PR description
+    3. Open a separate issue for the streaming optimization
+
+verification_after_deploy: |
+  - Upload a 10MB file through the UI — should succeed
+  - Upload a 60MB file — should get a clear 413 error, not a timeout
+  - Check application memory usage hasn't spiked
+  - Monitor error logs for 10 minutes after deploy

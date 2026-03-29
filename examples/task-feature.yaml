@@ -1,0 +1,68 @@
+task: feature/rate-limiting
+issue: 51
+priority: P1-high
+type: feature
+level: 0
+
+title: "Add rate limiting to public API endpoints"
+
+context: |
+  The public API has no rate limiting. A single client can make unlimited
+  requests, and we've seen abuse patterns causing elevated latency for all
+  users. The team decided on a token bucket algorithm with per-IP limits.
+
+  Design decisions (from issue discussion):
+  - 100 requests per minute per IP for authenticated users
+  - 20 requests per minute per IP for unauthenticated users
+  - Return 429 Too Many Requests with Retry-After header
+  - Use in-memory store (Redis can come later if needed)
+  - Only apply to /api/* routes, not static assets or health checks
+
+  Research comment on issue #51 has analysis of existing middleware patterns.
+
+acceptance_criteria:
+  - Rate limiter middleware applied to /api/* routes
+  - Authenticated users: 100 req/min per IP
+  - Unauthenticated users: 20 req/min per IP
+  - 429 response includes Retry-After header with seconds until reset
+  - Rate limit headers on all responses (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+  - Health check (/health) and static routes excluded
+  - Tests for all rate limit scenarios
+  - All existing tests pass
+
+files:
+  - src/middleware/rate-limiter.ts (new file)
+  - src/api/index.ts (apply middleware)
+  - tests/middleware/rate-limiter.test.ts (new file)
+
+do_not_modify:
+  - src/middleware/auth.ts
+  - src/middleware/cors.ts
+
+flow:
+  - "Read issue #51 with comments for research context"
+  - "Read architecture docs and CLAUDE.md"
+  - "Read src/middleware/cors.ts for middleware pattern reference"
+  - "MILESTONE 1 — Implement rate limiter:"
+  - "  a. Create src/middleware/rate-limiter.ts"
+  - "  b. Implement token bucket with in-memory Map"
+  - "  c. Support different limits for authenticated vs unauthenticated"
+  - "  d. Add cleanup interval for expired entries (prevent memory leak)"
+  - "MILESTONE 2 — Integrate:"
+  - "  a. Apply middleware to /api/* routes in src/api/index.ts"
+  - "  b. Exclude /health and static routes"
+  - "  c. Add rate limit headers to all responses"
+  - "MILESTONE 3 — Tests:"
+  - "  a. Test: requests under limit succeed"
+  - "  b. Test: requests over limit return 429 with Retry-After"
+  - "  c. Test: authenticated vs unauthenticated limits differ"
+  - "  d. Test: /health endpoint not rate limited"
+  - "  e. Test: rate limit resets after window expires"
+  - "Run tests — fix until green"
+  - "Commit and open PR"
+
+fallback: |
+  If token bucket is too complex:
+    1. Use a simpler fixed-window counter (less fair but simpler)
+    2. Note the limitation in the PR
+    3. Open a follow-up issue for sliding window upgrade

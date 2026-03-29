@@ -1,0 +1,58 @@
+{
+  "tasks": {
+    "fix/api-timeout-large-payloads": {
+      "level": 0,
+      "issue": 47,
+      "worktree": "~/worktrees/wt-01",
+      "tmux_window": "worker-01",
+      "status": "ready-for-human",
+      "pr_number": 60,
+      "attempts": 1,
+      "checks": {
+        "pr_created": true,
+        "branch_synced": true,
+        "ci_passed": true,
+        "review_passed": true,
+        "screenshot_included": null
+      }
+    },
+    "feature/rate-limiting": {
+      "level": 0,
+      "issue": 51,
+      "worktree": "~/worktrees/wt-02",
+      "tmux_window": "worker-02",
+      "status": "reviewing",
+      "pr_number": 61,
+      "attempts": 1,
+      "checks": {
+        "pr_created": true,
+        "branch_synced": true,
+        "ci_passed": true,
+        "review_passed": false,
+        "screenshot_included": null
+      }
+    },
+    "refactor/extract-validation-utils": {
+      "level": 1,
+      "issue": 55,
+      "worktree": null,
+      "tmux_window": null,
+      "status": "blocked",
+      "pr_number": null,
+      "attempts": 0,
+      "checks": {
+        "pr_created": false,
+        "branch_synced": false,
+        "ci_passed": false,
+        "review_passed": false,
+        "screenshot_included": null
+      }
+    }
+  },
+  "worktrees": {
+    "~/worktrees/wt-01": "fix/api-timeout-large-payloads",
+    "~/worktrees/wt-02": "feature/rate-limiting",
+    "~/worktrees/wt-03": "free"
+  },
+  "ready_for_human": ["fix/api-timeout-large-payloads"]
+}

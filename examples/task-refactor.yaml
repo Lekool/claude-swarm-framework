@@ -1,0 +1,65 @@
+task: refactor/extract-validation-utils
+issue: 55
+priority: P2-medium
+type: refactor
+level: 1  # Depends on #47 (fix/api-timeout) which touches body-parser
+
+title: "Extract shared validation utilities from endpoint handlers"
+
+context: |
+  Multiple API endpoints duplicate the same validation logic:
+  email format checking, UUID parsing, date range validation, and
+  pagination parameter parsing. These are copy-pasted across 6 handler
+  files with slight inconsistencies.
+
+  This refactor extracts them into a shared utils module to reduce
+  duplication and fix the inconsistencies (e.g., some handlers accept
+  "null" as a string for optional fields, others don't).
+
+  This is Level 1 because issue #47 (API timeout fix) modifies
+  body-parser middleware that interacts with validation. Must merge
+  after #47 to avoid conflicts.
+
+acceptance_criteria:
+  - New src/utils/validation.ts with shared validators
+  - All 6 handler files use the shared validators instead of inline logic
+  - Behavior is identical (no user-facing changes)
+  - "null" string handling is consistent across all endpoints
+  - All existing tests pass without modification (behavior unchanged)
+  - New unit tests for the validation utils
+
+files:
+  - src/utils/validation.ts (new file)
+  - src/api/users.ts
+  - src/api/projects.ts
+  - src/api/uploads.ts
+  - src/api/search.ts
+  - src/api/reports.ts
+  - src/api/settings.ts
+  - tests/utils/validation.test.ts (new file)
+
+flow:
+  - "Read issue #55 with comments"
+  - "Read architecture docs and CLAUDE.md"
+  - "MILESTONE 1 — Catalog existing validation:"
+  - "  a. Read all 6 handler files"
+  - "  b. List every inline validation pattern"
+  - "  c. Identify inconsistencies (document them in PR)"
+  - "MILESTONE 2 — Create shared module:"
+  - "  a. Create src/utils/validation.ts"
+  - "  b. Extract: validateEmail, parseUUID, validateDateRange, parsePagination"
+  - "  c. Standardize 'null' string handling (reject it — use undefined)"
+  - "MILESTONE 3 — Replace inline usage:"
+  - "  a. Update each handler to import from validation utils"
+  - "  b. Run tests after EACH file to catch regressions immediately"
+  - "MILESTONE 4 — Tests:"
+  - "  a. Unit tests for each validator"
+  - "  b. Edge cases: empty strings, special characters, boundary values"
+  - "Run full test suite — fix until green"
+  - "Commit and open PR"
+
+fallback: |
+  If replacing inline validation breaks existing tests:
+    1. Keep the shared module but only apply to 1-2 handlers
+    2. Note which handlers still need migration in the PR
+    3. Open follow-up issues for remaining handlers
