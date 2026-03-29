@@ -1,9 +1,4 @@
 .DS_Store
 
 # Ephemeral swarm state (regenerated each session)
-tasks/HANDOFF.md
-
-# Suggested additions for your target repo's .gitignore:
-# tasks/state.json
-# tasks/learnings.jsonl
-# tasks/HANDOFF.md
+tasks/
